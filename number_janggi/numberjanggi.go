@@ -6,12 +6,14 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"os"
 	"os/signal"
+	"strconv"
 	"syscall"
 	"time"
 )
 
 var token string
 var pre string="TEST"
+var limit int=120
 
 func init(){
 	flag.StringVar(&token, "t", "NzM1MDExOTY1NzYzNTg0MDYx.XxbUbA.xMiDXYUbjixzVTgHN-O9WdVlEOc", "Bot Token")
@@ -65,12 +67,18 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate){
 	}
 
 	if (m.Content == "timer"){
-		timer = time.NewTicker(120 * time.Second)
+		ticker := time.NewTicker(10 * time.Second)
 		go func() {
-			for t := range ticker.C {
-				if (t % 30 == 0) {
-					s.ChannelMessageSend(m.ChannelID, " 앞으로 "+(120-t)+"초 남았습니다.\n")
+			for t := range ticker.C{
+				limit-=10
+				if(limit!=0){
+					s.ChannelMessageSend(m.ChannelID, strconv.Itoa(limit)+"초 남았습니다"+strconv.Itoa(t.Year()))
 				}
+				if(limit==0){
+					s.ChannelMessageSend(m.ChannelID,"시간이 종료되었습니다.")
+					ticker.Stop()
+				}
+
 			}
 		}()
 	}
