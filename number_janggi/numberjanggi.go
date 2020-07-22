@@ -10,7 +10,8 @@ import (
 )
 
 var token string
-	
+var pre string="TEST"
+
 func init(){
 	flag.StringVar(&token, "t", "NzM1MDExOTY1NzYzNTg0MDYx.XxbUbA.xMiDXYUbjixzVTgHN-O9WdVlEOc", "Bot Token")
 	flag.Parse()
@@ -47,11 +48,17 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate){
 		return
 	}
 	
-	if (m.Content == "ping"){
+	if (m.Content == pre+"ping"){
 		s.ChannelMessageSend(m.ChannelID, "Pong!");
 	}
 
-	if (m.Content == "pong"){
+	if (m.Content == pre+"pong"){
 		s.ChannelMessageSend(m.ChannelID, "Ping!");
+	}
+
+	if(m.Content==pre+pre){
+		s.ChannelMessageSend(m.ChannelID,"현재 상황\n:regional_indicator_b: :x: :x: :three:\n" +
+			":regional_indicator_a: :regional_indicator_d: :four: :one:\n" +
+			":regional_indicator_c: :x: :x: :two:")
 	}
 }
