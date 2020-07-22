@@ -57,8 +57,8 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate){
 	}
 
 	if(m.Content==pre+pre){
-		s.ChannelMessageSend(m.ChannelID," :red_sang: :x: :x: :green_jang:\n" +
-			":red_wang: :red_ja: :green_ja: :green_wang:\n " +
-			":red_jang: :x: :x: :green_sang:\n")
+		s.ChannelMessageSend(m.ChannelID," :red_sang:735334778659668020 :x: :x: :green_jang:735336627651739658\n" +
+			":red_wang:735332478344233000 :red_ja:735335582397497355 :green_ja:735337243601797233 :green_wang:735336627597082625\n " +
+			":red_jang:735331743934054480 :x: :x: :green_sang:735336627874037790\n")
 	}
 }
