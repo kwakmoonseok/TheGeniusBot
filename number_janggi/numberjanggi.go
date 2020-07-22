@@ -3,9 +3,9 @@ package main
 import (
 	"flag"
 	"fmt"
+	"github.com/bwmarrin/discordgo"
 	"os"
 	"os/signal"
-	"github.com/bwmarrin/discordgo"
 	"syscall"
 )
 
@@ -57,8 +57,8 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate){
 	}
 
 	if(m.Content==pre+pre){
-		s.ChannelMessageSend(m.ChannelID,"현재 상황\n:regional_indicator_b: :x: :x: :three:\n" +
-			":regional_indicator_a: :regional_indicator_d: :four: :one:\n" +
-			":regional_indicator_c: :x: :x: :two:")
+		s.ChannelMessageSend(m.ChannelID," :red_sang: :x: :x: :green_jang:\n" +
+			":red_wang: :red_ja: :green_ja: :green_wang:\n " +
+			":red_jang: :x: :x: :green_sang:\n")
 	}
 }
