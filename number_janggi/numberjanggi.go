@@ -68,9 +68,23 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate){
 	if (m.Content == "timer") {
 		 t:=time.Now()
 
-		 for int(time.Until(t))<1{
-			 print(m.ChannelID, strconv.Itoa(int(time.Since(t)))+"\n")
-		 }
+		 const timeInterval = 30
+		 const nanoToSec = 1000000000
+		 const limitSec = 120
 
+		 secondMap := make(map[int]int)
+		 elapsedTime := int(time.Since(t) / nanoToSec)
+
+		 for elapsedTime < limitSec {
+		 	elapsedTime = int(time.Since(t) / nanoToSec)
+		 	if elapsedTime % timeInterval == 0 {
+				_, exist := secondMap[elapsedTime / timeInterval]
+				if !exist && elapsedTime < limitSec{
+					s.ChannelMessageSend(m.ChannelID, strconv.Itoa(limitSec - elapsedTime)+"초 남았습니다.\n")
+					secondMap[elapsedTime / timeInterval] = elapsedTime
+				}
+			}
+		 }
+		s.ChannelMessageSend(m.ChannelID, "시간이 종료되었습니다.\n")
 	}
 }
