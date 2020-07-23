@@ -3,11 +3,12 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/bradhe/stopwatch"
 	"github.com/bwmarrin/discordgo"
 	"os"
 	"os/signal"
+	"strconv"
 	"syscall"
+	"time"
 )
 
 var token string
@@ -65,12 +66,11 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate){
 			"<:red_jang:735331743934054480> :x: :x: <:green_sang:735336627874037790>\n")
 	}
 	if (m.Content == "timer") {
-		watch := stopwatch.Start()
-		for int(watch.Seconds()) < 120 {
-			if int(watch.Seconds()) % 10 == 0 {
-				s.ChannelMessageSend(m.ChannelID, string(120 - int(watch.Seconds())) + "초 남았습니다.")
-			}
-		}
-		watch.Stop()
+		 t:=time.Now()
+
+		 for int(time.Until(t))<1{
+			 print(m.ChannelID, strconv.Itoa(int(time.Since(t)))+"\n")
+		 }
+
 	}
 }
