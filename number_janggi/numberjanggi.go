@@ -11,9 +11,16 @@ import (
 	"time"
 )
 
+const boardRow = 3
+const boardColumn = 4
+
 var token string
 var pre string="TEST"
-var limit int=120
+var gameBoard = [boardRow][boardColumn]string {
+	{"red_sang", "", "", "green_jang"},
+	{"red_wang", "red_ja", "green_ja", "green_wang"},
+	{"red_jang", "", "", "green_jang"},
+}
 
 func init(){
 	flag.StringVar(&token, "t", "NzM1MDExOTY1NzYzNTg0MDYx.XxbUbA.xMiDXYUbjixzVTgHN-O9WdVlEOc", "Bot Token")
@@ -50,20 +57,35 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate){
 	if m.Author.ID == s.State.User.ID {
 		return
 	}
-	
-	if (m.Content == pre+"ping"){
-		s.ChannelMessageSend(m.ChannelID, "Pong!");
-	}
 
-	if (m.Content == pre+"pong"){
-		s.ChannelMessageSend(m.ChannelID, "Ping!");
-	}
-
-	if(m.Content==pre+pre){
-		s.ChannelMessageSend(m.ChannelID,"현재 상황\n" +
-			"<:red_sang:735334778659668020> :x: :x: <:green_jang:735336627651739658>\n" +
-			"<:red_wang:735332478344233000> <:red_ja:735335582397497355> <:green_ja:735337243601797233> <:green_wang:735336627597082625>\n" +
-			"<:red_jang:735331743934054480> :x: :x: <:green_sang:735336627874037790>\n")
+	if (m.Content==pre+pre) {
+		var command string
+		for i := 0; i < boardRow; i++ {
+			for j := 0; j < boardColumn; j++ {
+				switch {
+					case gameBoard[i][j] == "red_sang":
+						command += "<:red_sang:735334778659668020> "
+					case gameBoard[i][j] == "red_wang":
+						command += "<:red_wang:735332478344233000> "
+					case gameBoard[i][j] == "red_jang":
+						command += "<:red_jang:735331743934054480> "
+					case gameBoard[i][j] == "red_ja":
+						command += "<:red_ja:735335582397497355> "
+					case gameBoard[i][j] == "green_sang":
+						command += "<:green_sang:735336627874037790> "
+					case gameBoard[i][j] == "green_wang":
+						command += "<:green_wang:735336627597082625> "
+					case gameBoard[i][j] == "green_jang":
+						command += "<:green_jang:735336627651739658> "
+					case gameBoard[i][j] == "green_ja":
+						command += "<:green_ja:735337243601797233> "
+					default:
+						command += ":x: "
+				}
+			}
+			command += "\n"
+		}
+		s.ChannelMessageSend(m.ChannelID, command)
 	}
 	if (m.Content == "timer") {
 		 t:=time.Now()
