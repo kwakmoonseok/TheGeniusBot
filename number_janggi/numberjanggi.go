@@ -69,11 +69,9 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate){
 		column, _ := strconv.Atoi(movingCommand[3])
 
 
-		if ((row <= 3 && row >= 0) && (column <= 3 && column > 0)){
-			row--
-			column--
+		if ((row <= 3 && row > 0) && (column <= 3 && column > 0)){
 			//움직일 위치에 말이 있을때
-			if (gameBoard[row][column] != " "){
+			if (gameBoard[row-1][column-1] != " "){
 				var movingPieceIndex []int
 				//var removedPiece string
 
@@ -83,7 +81,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate){
 						movingPieceIndex = []int {i, tempIndex}
 
 						//removedPiece = gameBoard[row][column]
-						gameBoard[row][column] = turn + "_" + movingCommand[1]
+						gameBoard[row-1][column-1] = turn + "_" + movingCommand[1]
 						gameBoard[movingPieceIndex[0]][movingPieceIndex[1]] = " "
 					}
 				}
@@ -102,7 +100,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate){
 					tempIndex := funk.IndexOf(gameBoard[i], turn + "_" + movingCommand[1])
 					if (tempIndex != -1){
 						movingPieceIndex = []int {i, tempIndex}
-						gameBoard[row][column] = turn + "_" + movingCommand[1]
+						gameBoard[row-1][column-1] = turn + "_" + movingCommand[1]
 						gameBoard[movingPieceIndex[0]][movingPieceIndex[1]] = " "
 					}
 				}
