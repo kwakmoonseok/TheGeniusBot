@@ -4,11 +4,14 @@ import (
 	"flag"
 	"fmt"
 	"github.com/bwmarrin/discordgo"
+	"github.com/thoas/go-funk"
 	"os"
 	"os/signal"
+	"src/github.com/thoas/go-funk"
 	"strconv"
 	"syscall"
 	"time"
+	"strings"
 )
 
 const boardRow = 3
@@ -58,6 +61,61 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate){
 		return
 	}
 
+	turn := "red"
+	movingCommand := strings.Split(" ", m.Content)
+
+	if (movingCommand[0] == "!이동"){
+		row, _ := strconv.Atoi(movingCommand[2])
+		row--
+		column, _ := strconv.Atoi(movingCommand[3])
+
+
+		if ((row <= 3 && row >= 0) && (column <= 3 && column > 0)){
+			row--
+			column--
+			//움직일 위치에 말이 있을때
+			if (gameBoard[row][column] != " "){
+				var movingPieceIndex []int
+				var removedPiece string
+
+				for i := 0; i < boardRow; i++{
+					tempIndex := funk.IndexOf(gameBoard[i], turn + "_" + movingCommand[1])
+					if (tempIndex != -1){
+						movingPieceIndex = []int {i, tempIndex}
+
+						removedPiece = gameBoard[row][column]
+						gameBoard[row][column] = turn + "_" + movingCommand[1]
+						gameBoard[movingPieceIndex[0]][movingPieceIndex[1]] = " "
+					}
+				}
+
+				if (turn == "red") {
+					turn = "green"
+				} else {
+					turn = "red"
+				}
+			}
+			//움직일 위치에 말이 없을때
+			if (gameBoard[row][column] == " "){
+				var movingPieceIndex []int
+
+				for i := 0; i < boardRow; i++{
+					tempIndex := funk.IndexOf(gameBoard[i], turn + "_" + movingCommand[1])
+					if (tempIndex != -1){
+						movingPieceIndex = []int {i, tempIndex}
+						gameBoard[row][column] = turn + "_" + movingCommand[1]
+						gameBoard[movingPieceIndex[0]][movingPieceIndex[1]] = " "
+					}
+				}
+
+				if (turn == "red") {
+					turn = "green"
+				} else {
+					turn = "red"
+				}
+			}
+		}
+	}
 	if (m.Content==pre+pre) {
 		var command string
 		for i := 0; i < boardRow; i++ {
@@ -109,4 +167,6 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate){
 		 }
 		s.ChannelMessageSend(m.ChannelID, "시간이 종료되었습니다.\n")
 	}
+	//어떻게 게임 보드를 움직일까?
+	
 }
