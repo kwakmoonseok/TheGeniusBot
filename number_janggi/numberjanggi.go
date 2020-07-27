@@ -17,10 +17,11 @@ const boardColumn = 4
 
 var token string
 var pre string="TEST"
+var turn = "red"
 var gameBoard = [boardRow][boardColumn]string {
 	{"red_sang", "", "", "green_jang"},
 	{"red_wang", "red_ja", "green_ja", "green_wang"},
-	{"red_jang", "", "", "green_jang"},
+	{"red_jang", "", "", "green_sang"},
 }
 
 func init(){
@@ -59,51 +60,50 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate){
 		return
 	}
 
-	turn := "red"
-	movingCommand := strings.Split(" ", m.Content)
+	if strings.Split(m.Content, " ")[0] == "!이동" {
+		movingCommand := strings.Split(m.Content, " ")
+		row, rowErr := strconv.Atoi(movingCommand[2])
+		column, colErr := strconv.Atoi(movingCommand[3])
 
-	if movingCommand[0] == "!이동" {
-		row, _ := strconv.Atoi(movingCommand[2])
-		row--
-		column, _ := strconv.Atoi(movingCommand[3])
-
-
+		if rowErr != nil {
+			s.ChannelMessageSend(m.ChannelID, "row 에러가 발생했습니다.")
+		}
+		if colErr != nil {
+			s.ChannelMessageSend(m.ChannelID, "column 에러가 발생했습니다.")
+		}
 		if (row <= 3 && row > 0) && (column <= 4 && column > 0) {
 			row--
 			column--
 			//움직일 위치에 말이 있을때
-			if gameBoard[row][column] != " " {
-				var pieceName string
+			if gameBoard[row][column] != "" {
+				var pieceName = turn + "_" + movingCommand[1]
 				var removedPiece string
-
-				for i := 0; i < boardRow; i++{
-					for j := 0; j < boardColumn; j++{
-						pieceName = turn + "_" + movingCommand[1]
+				for i := 0; i < boardRow; i++ {
+					for j := 0; j < boardColumn; j++ {
 						if gameBoard[i][j] == pieceName {
 							removedPiece = gameBoard[row][column]
 							gameBoard[row][column] = gameBoard[i][j]
+							gameBoard[i][j] = ""
+							break
 						}
 					}
 				}
-				s.ChannelMessageSend(m.ChannelID, removedPiece + "말을 잡았습니다.")
 
-			}
-			//움직일 위치에 말이 없을때
-			if gameBoard[row][column] == " " {
-				var pieceName string
-
-				for i := 0; i < boardRow; i++{
-					for j := 0; j < boardColumn; j++{
-						pieceName = turn + "_" + movingCommand[1]
+				s.ChannelMessageSend(m.ChannelID, removedPiece+"말을 잡았습니다.")
+			} else {
+				var pieceName = turn + "_" + movingCommand[1]
+				for i := 0; i < boardRow; i++ {
+					for j := 0; j < boardColumn; j++ {
 						if gameBoard[i][j] == pieceName {
 							gameBoard[row][column] = gameBoard[i][j]
-							gameBoard[i][j] = " "
+							gameBoard[i][j] = ""
+							break
 						}
 					}
 				}
-
 			}
 		}
+		m.Content = pre+pre
 	}
 	if m.Content==pre+pre {
 		var command string
