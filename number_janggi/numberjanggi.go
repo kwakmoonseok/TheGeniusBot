@@ -4,14 +4,12 @@ import (
 	"flag"
 	"fmt"
 	"github.com/bwmarrin/discordgo"
-	"github.com/thoas/go-funk"
 	"os"
 	"os/signal"
-	"src/github.com/thoas/go-funk"
 	"strconv"
+	"strings"
 	"syscall"
 	"time"
-	"strings"
 )
 
 const boardRow = 3
@@ -64,59 +62,50 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate){
 	turn := "red"
 	movingCommand := strings.Split(" ", m.Content)
 
-	if (movingCommand[0] == "!이동"){
+	if movingCommand[0] == "!이동" {
 		row, _ := strconv.Atoi(movingCommand[2])
 		row--
 		column, _ := strconv.Atoi(movingCommand[3])
 
 
-		if ((row <= 3 && row >= 0) && (column <= 3 && column > 0)){
+		if (row <= 3 && row > 0) && (column <= 4 && column > 0) {
 			row--
 			column--
 			//움직일 위치에 말이 있을때
-			if (gameBoard[row][column] != " "){
-				var movingPieceIndex []int
+			if gameBoard[row][column] != " " {
+				var pieceName string
 				var removedPiece string
 
 				for i := 0; i < boardRow; i++{
-					tempIndex := funk.IndexOf(gameBoard[i], turn + "_" + movingCommand[1])
-					if (tempIndex != -1){
-						movingPieceIndex = []int {i, tempIndex}
-
-						removedPiece = gameBoard[row][column]
-						gameBoard[row][column] = turn + "_" + movingCommand[1]
-						gameBoard[movingPieceIndex[0]][movingPieceIndex[1]] = " "
+					for j := 0; j < boardColumn; j++{
+						pieceName = turn + "_" + movingCommand[1]
+						if gameBoard[i][j] == pieceName {
+							removedPiece = gameBoard[row][column]
+							gameBoard[row][column] = gameBoard[i][j]
+						}
 					}
 				}
+				s.ChannelMessageSend(m.ChannelID, removedPiece + "말을 잡았습니다.")
 
-				if (turn == "red") {
-					turn = "green"
-				} else {
-					turn = "red"
-				}
 			}
 			//움직일 위치에 말이 없을때
-			if (gameBoard[row][column] == " "){
-				var movingPieceIndex []int
+			if gameBoard[row][column] == " " {
+				var pieceName string
 
 				for i := 0; i < boardRow; i++{
-					tempIndex := funk.IndexOf(gameBoard[i], turn + "_" + movingCommand[1])
-					if (tempIndex != -1){
-						movingPieceIndex = []int {i, tempIndex}
-						gameBoard[row][column] = turn + "_" + movingCommand[1]
-						gameBoard[movingPieceIndex[0]][movingPieceIndex[1]] = " "
+					for j := 0; j < boardColumn; j++{
+						pieceName = turn + "_" + movingCommand[1]
+						if gameBoard[i][j] == pieceName {
+							gameBoard[row][column] = gameBoard[i][j]
+							gameBoard[i][j] = " "
+						}
 					}
 				}
 
-				if (turn == "red") {
-					turn = "green"
-				} else {
-					turn = "red"
-				}
 			}
 		}
 	}
-	if (m.Content==pre+pre) {
+	if m.Content==pre+pre {
 		var command string
 		for i := 0; i < boardRow; i++ {
 			for j := 0; j < boardColumn; j++ {
@@ -145,7 +134,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate){
 		}
 		s.ChannelMessageSend(m.ChannelID, command)
 	}
-	if (m.Content == "timer") {
+	if m.Content == "timer" {
 		 t:=time.Now()
 
 		 const timeInterval = 30
