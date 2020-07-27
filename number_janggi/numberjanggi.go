@@ -7,7 +7,6 @@ import (
 	"github.com/thoas/go-funk"
 	"os"
 	"os/signal"
-	"src/github.com/thoas/go-funk"
 	"strconv"
 	"syscall"
 	"time"
@@ -76,14 +75,14 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate){
 			//움직일 위치에 말이 있을때
 			if (gameBoard[row][column] != " "){
 				var movingPieceIndex []int
-				var removedPiece string
+				//var removedPiece string
 
 				for i := 0; i < boardRow; i++{
 					tempIndex := funk.IndexOf(gameBoard[i], turn + "_" + movingCommand[1])
 					if (tempIndex != -1){
 						movingPieceIndex = []int {i, tempIndex}
 
-						removedPiece = gameBoard[row][column]
+						//removedPiece = gameBoard[row][column]
 						gameBoard[row][column] = turn + "_" + movingCommand[1]
 						gameBoard[movingPieceIndex[0]][movingPieceIndex[1]] = " "
 					}
