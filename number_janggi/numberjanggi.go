@@ -91,10 +91,11 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate){
 
 				s.ChannelMessageSend(m.ChannelID, removedPiece+"말을 잡았습니다.")
 			} else {
-				var pieceName = turn + "_" + movingCommand[1]
+				var caughtPieceName = turn + "_" + movingCommand[1]
 				for i := 0; i < boardRow; i++ {
 					for j := 0; j < boardColumn; j++ {
-						if gameBoard[i][j] == pieceName {
+						movingPieceColor := strings.Split(gameBoard[i][j], "_")[0]
+						if gameBoard[i][j] == caughtPieceName && movingPieceColor != turn{
 							gameBoard[row][column] = gameBoard[i][j]
 							gameBoard[i][j] = ""
 							break
