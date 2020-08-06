@@ -82,15 +82,22 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate){
 					for j := 0; j < boardColumn; j++ {
 						if gameBoard[i][j] == pieceName {
 							removedPiece = gameBoard[row][column]
-							gameBoard[row][column] = gameBoard[i][j]
-							gameBoard[i][j] = ""
-							break
+							if strings.Contains(removedPiece,turn){
+								s.ChannelMessageSend(m.ChannelID, "움직일 수 없는 곳입니다.")
+							}
+							if !strings.Contains(removedPiece,turn){
+								gameBoard[row][column] = gameBoard[i][j]
+								gameBoard[i][j] = ""
+								s.ChannelMessageSend(m.ChannelID, removedPiece+"말을 잡았습니다.")
+								break
+							}
+
 						}
 					}
 				}
 
-				s.ChannelMessageSend(m.ChannelID, removedPiece+"말을 잡았습니다.")
-			} else {
+
+			} else {//움직일 위치에 말이 없을때
 				var caughtPieceName = turn + "_" + movingCommand[1]
 				for i := 0; i < boardRow; i++ {
 					for j := 0; j < boardColumn; j++ {
