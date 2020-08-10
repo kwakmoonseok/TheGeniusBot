@@ -75,7 +75,20 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate){
 			row--
 			column--
 			//움직일 위치에 말이 있을때
-			if gameBoard[row][column] != "" {
+			if gameBoard[row][column] == "" {
+				var caughtPieceName = turn + "_" + movingCommand[1]
+				for i := 0; i < boardRow; i++ {
+					for j := 0; j < boardColumn; j++ {
+						movingPieceColor := strings.Split(gameBoard[i][j], "_")
+						s.ChannelMessageSend(m.ChannelID, movingPieceColor[0])
+						if gameBoard[i][j] == caughtPieceName && movingPieceColor[0] != turn{
+							gameBoard[row][column] = gameBoard[i][j]
+							gameBoard[i][j] = ""
+							break
+						}
+					}
+				}
+			} else {
 				var pieceName = turn + "_" + movingCommand[1]
 				var removedPiece string
 				for i := 0; i < boardRow; i++ {
@@ -90,18 +103,6 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate){
 				}
 
 				s.ChannelMessageSend(m.ChannelID, removedPiece+"말을 잡았습니다.")
-			} else {
-				var caughtPieceName = turn + "_" + movingCommand[1]
-				for i := 0; i < boardRow; i++ {
-					for j := 0; j < boardColumn; j++ {
-						movingPieceColor := strings.Split(gameBoard[i][j], "_")[0]
-						if gameBoard[i][j] == caughtPieceName && movingPieceColor != turn{
-							gameBoard[row][column] = gameBoard[i][j]
-							gameBoard[i][j] = ""
-							break
-						}
-					}
-				}
 			}
 		}
 		m.Content = pre+pre
