@@ -76,52 +76,56 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate){
 			column--
 			if movingCommand[1] == "ja" {
 				var movingPieceName = turn + "_" + movingCommand[1]
-				for i := 0; i < boardRow; i++ {
-					for j := 0; j < boardColumn; j++ {
-						if movingPieceName == gameBoard[i][j] && i != row && j+1 != column {
-							s.ChannelMessageSend(m.ChannelID, "해당 말은 그렇게 이동시킬 수 없습니다.")
-						} else {
-							if gameBoard[row][column] == "" {
-								moveToEmptyPlace := func(movingPieceName string) {
-									for i := 0; i < boardRow; i++ {
-										for j := 0; j < boardColumn; j++ {
-											movingPieceColor := strings.Split(gameBoard[i][j], "_")
-											if gameBoard[i][j] == movingPieceName && movingPieceColor[0] != turn {
-												gameBoard[row][column] = gameBoard[i][j]
-												gameBoard[i][j] = ""
-												return
-											}
-										}
-									}
-								}
-								moveToEmptyPlace(movingPieceName)
-								m.Content = pre+pre
+				movingPiece := func(movingPieceName string) {
+					for i := 0; i < boardRow; i++ {
+						for j := 0; j < boardColumn; j++ {
+							if movingPieceName == gameBoard[i][j] && i != row && j+1 != column {
+								s.ChannelMessageSend(m.ChannelID, "해당 말은 그렇게 이동시킬 수 없습니다.")
+								return
 							} else {
-								var pieceName = turn + "_" + movingCommand[1]
-								var removedPiece string
-								for i := 0; i < boardRow; i++ {
-									for j := 0; j < boardColumn; j++ {
-										if gameBoard[i][j] == pieceName {
-											removedPiece = gameBoard[row][column]
-											if strings.Contains(removedPiece, turn) {
-												s.ChannelMessageSend(m.ChannelID, "움직일 수 없는 곳입니다.")
-												break
-											}
-											if !strings.Contains(removedPiece, turn) {
-												gameBoard[row][column] = gameBoard[i][j]
-												gameBoard[i][j] = ""
-												s.ChannelMessageSend(m.ChannelID, removedPiece+"말을 잡았습니다.")
-												break
+								if gameBoard[row][column] == "" {
+									moveToEmptyPlace := func(movingPieceName string) {
+										for i := 0; i < boardRow; i++ {
+											for j := 0; j < boardColumn; j++ {
+												movingPieceColor := strings.Split(gameBoard[i][j], "_")
+												if gameBoard[i][j] == movingPieceName && movingPieceColor[0] != turn {
+													gameBoard[row][column] = gameBoard[i][j]
+													gameBoard[i][j] = ""
+													return
+												}
 											}
 										}
 									}
+									moveToEmptyPlace(movingPieceName)
+								} else {
+									var movingPieceName = turn + "_" + movingCommand[1]
+									var removedPiece string
+									moveToOccupiedPlace := func(movingPieceName string) (chatting string) {
+										for i := 0; i < boardRow; i++ {
+											for j := 0; j < boardColumn; j++ {
+												if gameBoard[i][j] == movingPieceName {
+													removedPiece = gameBoard[row][column]
+													if !strings.Contains(removedPiece, turn) {
+														gameBoard[row][column] = gameBoard[i][j]
+														gameBoard[i][j] = ""
+														return removedPiece + "말을 잡았습니다."
+													}
+												}
+											}
+										}
+										return "움직일 수 없는 곳입니다."
+									}
+									s.ChannelMessageSend(m.ChannelID, moveToOccupiedPlace(movingPieceName))
+									return
 								}
 							}
 						}
 					}
 				}
+				movingPiece(movingPieceName)
 			}
 		}
+		m.Content = pre + pre
 	}
 	if m.Content==pre+pre {
 		var command string
