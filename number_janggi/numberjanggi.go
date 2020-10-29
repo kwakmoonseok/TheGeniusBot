@@ -74,12 +74,13 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate){
 		if (row <= 3 && row > 0) && (column <= 4 && column > 0) {
 			row--
 			column--
+			//ja 움직이기
 			if movingCommand[1] == "ja" {
 				var movingPieceName = turn + "_" + movingCommand[1]
 				movingPiece := func(movingPieceName string) {
 					for i := 0; i < boardRow; i++ {
 						for j := 0; j < boardColumn; j++ {
-							if movingPieceName == gameBoard[i][j] && i != row && j+1 != column {
+							if movingPieceName == gameBoard[i][j] && (i != row && j+1 != column) {
 								s.ChannelMessageSend(m.ChannelID, "해당 말은 그렇게 이동시킬 수 없습니다.")
 								return
 							} else {
